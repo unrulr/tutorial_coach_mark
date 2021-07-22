@@ -99,9 +99,10 @@ class AnimatedFocusLightState extends State<AnimatedFocusLight>
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: _targetFocus.enableOverlayTab
-          ? () => _tapHandler(overlayTap: true)
-          : null,
+      onTap: () => _tapHandler(
+        overlayTap: true,
+        changeStep: _targetFocus.enableOverlayTab,
+      ),
       child: AnimatedBuilder(
         animation: _controller,
         builder: (_, child) {
@@ -128,9 +129,10 @@ class AnimatedFocusLightState extends State<AnimatedFocusLight>
                         _getPaddingFocus() * 2,
                     child: InkWell(
                       borderRadius: _betBorderRadiusTarget(),
-                      onTap: _targetFocus.enableTargetTab
-                          ? () => _tapHandler(targetTap: true)
-                          : null,
+                      onTap: () => _tapHandler(
+                        targetTap: true,
+                        changeStep: _targetFocus.enableTargetTab,
+                      ),
                       child: Container(
                         color: Colors.transparent,
                         width: (_targetPosition?.size.width ?? 0) +
@@ -152,12 +154,18 @@ class AnimatedFocusLightState extends State<AnimatedFocusLight>
   void next() => _tapHandler();
   void previous() => _tapHandler(goNext: false);
 
-  void _tapHandler(
-      {bool goNext = true, bool targetTap = false, bool overlayTap = false}) {
-    setState(() {
-      _goNext = goNext;
-      _initReverse = true;
-    });
+  void _tapHandler({
+    bool goNext = true,
+    bool targetTap = false,
+    bool overlayTap = false,
+    bool changeStep = true,
+  }) {
+    if (changeStep) {
+      setState(() {
+        _goNext = goNext;
+        _initReverse = true;
+      });
+    }
     _controllerPulse.reverse(from: _controllerPulse.value);
     if (targetTap) {
       widget.clickTarget?.call(_targetFocus);
