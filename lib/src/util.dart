@@ -11,15 +11,24 @@ TargetPosition? getTargetCurrent(TargetFocus target) {
     try {
       final RenderBox renderBoxRed =
           key.currentContext!.findRenderObject() as RenderBox;
+
       final size = renderBoxRed.size;
-      final state =
-          key.currentContext!.findAncestorStateOfType<NavigatorState>();
       Offset offset;
-      if (state != null) {
-        offset = renderBoxRed.localToGlobal(Offset.zero,
-            ancestor: state.context.findRenderObject());
+
+      if (target.coordinatesContext != null) {
+        offset = renderBoxRed.localToGlobal(
+          Offset.zero,
+          ancestor: target.coordinatesContext!.findRenderObject(),
+        );
       } else {
-        offset = renderBoxRed.localToGlobal(Offset.zero);
+        final state =
+            key.currentContext!.findAncestorStateOfType<NavigatorState>();
+        if (state != null) {
+          offset = renderBoxRed.localToGlobal(Offset.zero,
+              ancestor: state.context.findRenderObject());
+        } else {
+          offset = renderBoxRed.localToGlobal(Offset.zero);
+        }
       }
 
       return TargetPosition(size, offset);
